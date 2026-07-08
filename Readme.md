@@ -1,48 +1,142 @@
-# Amazon Clone
+# Amazon Clone v2
 
-## Description
+A production-grade full-stack e-commerce mobile app built with **React Native (Expo)** and a **Node.js / Express** REST API.
 
-Amazon Clone is a full-stack e-commerce application built with React Native (Expo) and the MERN stack (MongoDB, Express, React, Node.js). This project aims to replicate some features of the Amazon shopping platform.
+---
 
-## Prerequisites
+## Tech Stack
 
-- [Node.js](https://nodejs.org/)
-- [Expo CLI](https://docs.expo.dev/get-started/installation/)
-- MongoDB Atlas Account (for database)
+### Frontend
+| Layer | Technology |
+|---|---|
+| Framework | Expo SDK 51 + Expo Router (file-based routing) |
+| Language | TypeScript (strict) |
+| State | Zustand (cart, auth, wishlist) |
+| Server state | TanStack Query v5 |
+| Forms | react-hook-form + Zod |
+| Styling | StyleSheet (React Native) |
+
+### Backend
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js 20+ |
+| Framework | Express 4 |
+| Language | TypeScript (strict) |
+| Database | MongoDB via Mongoose |
+| Auth | JWT (jsonwebtoken) |
+| Validation | Zod |
+| Security | Helmet + express-rate-limit |
+| Dev server | tsx watch |
+
+---
+
+## Project Structure
+
+```
+Amazon-Clone/
+├── app/                    # Expo Router screens
+│   ├── (auth)/             # Login, Register
+│   ├── (tabs)/             # Home, Search, Wishlist, Cart, Profile
+│   ├── product/[id].tsx    # Product detail
+│   ├── checkout.tsx        # 4-step checkout
+│   ├── order/[id].tsx      # Order detail
+│   ├── address/            # Add / list addresses
+│   └── order-success.tsx   # Post-order animation
+├── src/
+│   ├── components/         # SearchBar, ProductCard, BannerCarousel, Skeleton, etc.
+│   ├── store/              # Zustand stores (auth, cart, wishlist)
+│   ├── hooks/              # TanStack Query hooks (useApi.ts)
+│   ├── lib/                # Axios client with JWT interceptor
+│   ├── types/              # Shared TypeScript interfaces
+│   └── constants/          # Static data (deals, offers, banners)
+└── api/
+    └── src/
+        ├── controllers/    # auth, address, order, profile
+        ├── models/         # User, Order (Mongoose)
+        ├── routes/         # Express routers
+        ├── middlewares/    # JWT auth, error handler
+        ├── utils/          # response helpers, email
+        └── config/         # env, database
+```
+
+---
 
 ## Getting Started
 
-1. Clone the repository:
+### 1. Clone
+```bash
+git clone https://github.com/theatulgupta/Amazon-Clone.git
+cd Amazon-Clone
+```
 
-   ```bash
-   git clone https://github.com/theatulgupta/Amazon-Clone.git
-   ```
+### 2. Backend setup
+```bash
+cd api
+cp .env .env.local   # fill in your values
+npm install
+npm run dev          # starts on http://0.0.0.0:8000
+```
 
-2. Navigate to the project directory:
+**Required `.env` values:**
+```
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/amazon-clone
+JWT_SECRET=your-strong-random-secret
+EMAIL_USER=your-gmail@gmail.com
+EMAIL_PASS=your-gmail-app-password
+```
 
-   ```bash
-   cd Amazon-Clone
-   ```
+### 3. Frontend setup
+```bash
+# from project root
+npm install
+```
 
-3. Install dependencies:
+Update `src/lib/api.ts` — set `API_URL` to your machine's local IP:
+```ts
+export const API_URL = 'http://192.168.x.x:8000/api/v1';
+```
 
-   ```bash
-   npm install
-   ```
+```bash
+npx expo start        # scan QR with Expo Go
+```
 
-4. Set up your MongoDB Atlas account and obtain the connection URI. Replace the MONGODB_URI in the .env file with your URI.
+---
 
-5. Start the Expo development server:
+## API Endpoints
 
-   ```bash
-   npx expo start
-   ```
+| Method | Path | Description |
+|---|---|---|
+| POST | `/api/v1/users/register` | Register |
+| POST | `/api/v1/users/login` | Login → JWT |
+| GET | `/api/v1/users/verify/:token` | Email verification |
+| GET | `/api/v1/user/profile/:userId` | Get profile |
+| POST | `/api/v1/address/add` | Add address |
+| GET | `/api/v1/address/:userId` | Get addresses |
+| DELETE | `/api/v1/address/:userId/:addressId` | Delete address |
+| POST | `/api/v1/order/add` | Place order |
+| GET | `/api/v1/order/:userId` | Get user orders |
+| GET | `/api/v1/order/detail/:id` | Get order by ID |
+| GET | `/health` | Health check |
 
-## Additional Information
+---
 
-- This project uses Expo for the mobile app development, allowing for cross-platform compatibility.
-- The MERN stack is utilized for the backend, featuring Express.js for the server and MongoDB for the database.
+## Features
+
+- ✅ JWT authentication with token expiry check
+- ✅ Email verification on register
+- ✅ Product browsing by category (FakeStore API)
+- ✅ Live search with 400ms debounce
+- ✅ Wishlist with heart toggle
+- ✅ Cart with quantity controls
+- ✅ 4-step checkout (address → delivery → payment → confirm)
+- ✅ Order history with status timeline
+- ✅ Skeleton loaders on all data screens
+- ✅ Empty states on cart, wishlist, orders
+- ✅ Rate limiting + security headers on API
+- ✅ Zod validation on all API inputs
+
+---
 
 ## License
 
-- This project is licensed under the MIT License - see the LICENSE file for details.
+MIT

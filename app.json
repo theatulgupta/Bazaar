@@ -1,36 +1,39 @@
 {
   "expo": {
-    "name": "AmazonClone",
-    "slug": "AmazonClone",
-    "version": "1.0.0",
+    "name": "Amazon Clone",
+    "slug": "amazon-clone",
+    "version": "2.0.0",
+    "scheme": "amazon-clone",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#131921"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.theatulgupta.amazonclone"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#131921"
       },
-      "package": "com.agkminds.AmazonClone"
+      "package": "com.theatulgupta.amazonclone"
     },
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "721af079-e19a-4fd1-9681-7c7aa7d626ee"
-      }
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
