@@ -9,7 +9,6 @@ import { OrdersRowSkeleton, SkeletonBox } from '../../src/components/Skeleton';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const qc = useQueryClient();
   const { userId, logout } = useAuthStore();
   const { data: user, isLoading: loadingUser, refetch: refetchUser } = useProfile(userId);
   const { data: orders, isLoading: loadingOrders, refetch: refetchOrders } = useOrders(userId);
@@ -40,9 +39,11 @@ export default function ProfileScreen() {
           resizeMode="contain"
         />
         <View style={s.headerIcons}>
-          <Ionicons name="notifications-outline" size={24} color="white" />
-          <Pressable onPress={() => router.push('/(tabs)/search')}>
+          <Pressable onPress={() => router.push('/(tabs)/search')} style={s.headerIconBtn}>
             <AntDesign name="search1" size={24} color="white" />
+          </Pressable>
+          <Pressable style={s.headerIconBtn}>
+            <Ionicons name="notifications-outline" size={24} color="white" />
           </Pressable>
         </View>
       </View>
@@ -97,8 +98,10 @@ export default function ProfileScreen() {
                 onPress={() => router.push({ pathname: '/order/[id]', params: { id: order._id } })}
                 style={s.orderCard}
               >
-                {order.products[0] && (
+                {order.products[0] ? (
                   <Image source={{ uri: order.products[0].image }} style={s.orderImg} resizeMode="contain" />
+                ) : (
+                  <View style={s.orderImgFallback} />
                 )}
                 <Text numberOfLines={2} style={s.orderName}>{order.products[0]?.name}</Text>
                 <Text style={s.orderTotal}>₹{order.totalPrice.toFixed(2)}</Text>
@@ -124,7 +127,8 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   header: { backgroundColor: '#232F3E', paddingHorizontal: 16, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   logo: { width: 100, height: 40 },
-  headerIcons: { flexDirection: 'row', gap: 16 },
+  headerIcons: { flexDirection: 'row', gap: 8 },
+  headerIconBtn: { padding: 6 },
   greetBox: { padding: 16, backgroundColor: '#FFFBEB', borderBottomWidth: 1, borderColor: '#FDE68A', minHeight: 72 },
   greetName: { fontSize: 20, fontWeight: '800', color: '#111' },
   greetEmail: { fontSize: 13, color: '#6B7280', marginTop: 2 },
@@ -137,6 +141,7 @@ const s = StyleSheet.create({
   ordersScroll: { paddingHorizontal: 12, paddingVertical: 12 },
   orderCard: { width: 160, borderWidth: 1, borderColor: '#E5E7EB', borderRadius: 12, padding: 10, marginRight: 10, backgroundColor: '#fff' },
   orderImg: { width: '100%', height: 90 },
+  orderImgFallback: { width: '100%', height: 90, borderRadius: 8, backgroundColor: '#F3F4F6' },
   orderName: { fontSize: 11, fontWeight: '700', marginTop: 6, color: '#111' },
   orderTotal: { fontSize: 12, fontWeight: '900', color: '#111', marginTop: 2 },
   statusBadge: { marginTop: 4, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, alignSelf: 'flex-start' },

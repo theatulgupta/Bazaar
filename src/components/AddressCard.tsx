@@ -11,7 +11,7 @@ interface Props {
 
 export default function AddressCard({ item, selected, onSelect, onDelete }: Props) {
   return (
-    <View style={[s.card, selected && s.cardSelected]}>
+    <View style={[s.card, selected && s.cardSelected]} accessibilityRole="button">
       <View style={s.headerRow}>
         <View style={s.nameRow}>
           {onSelect && (
@@ -29,7 +29,7 @@ export default function AddressCard({ item, selected, onSelect, onDelete }: Prop
       <Text style={s.line}>{item.houseNo}, {item.landmark}</Text>
       <Text style={s.line}>{item.street}</Text>
       <Text style={s.line}>{item.city}, {item.state} - {item.pincode}</Text>
-      <Text style={s.line}>📞 {item.mobile}</Text>
+      <Text style={s.line}>Phone: {item.mobile}</Text>
 
       {onDelete && (
         <Pressable onPress={onDelete} style={s.deleteBtn}>

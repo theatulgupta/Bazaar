@@ -9,6 +9,7 @@ import { useAddresses, useCreateOrder } from '../src/hooks/useApi';
 import AddressCard from '../src/components/AddressCard';
 import { SkeletonBox } from '../src/components/Skeleton';
 import { Address } from '../src/types';
+import EmptyState from '../src/components/EmptyState';
 
 const STEPS = ['Address', 'Delivery', 'Payment', 'Order'];
 
@@ -22,6 +23,21 @@ export default function CheckoutScreen() {
   const [step, setStep] = useState(0);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | ''>('');
+
+  if (items.length === 0) {
+    return (
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <Text style={s.pageTitle}>Checkout</Text>
+        <EmptyState
+          icon="shopping-cart"
+          title="Your cart is empty"
+          subtitle="Add products to your cart before checking out."
+          actionLabel="Browse Products"
+          onAction={() => router.push('/(tabs)/home')}
+        />
+      </SafeAreaView>
+    );
+  }
 
   const handlePlaceOrder = async () => {
     if (!selectedAddress || !paymentMethod || !userId) return;
@@ -194,6 +210,7 @@ export default function CheckoutScreen() {
 
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
+  pageTitle: { fontSize: 18, fontWeight: '800', color: '#111', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4 },
   header: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1, borderColor: '#F3F4F6' },
   headerTitle: { flex: 1, textAlign: 'center', fontWeight: '700', fontSize: 16, color: '#111' },
   iconBtn: { padding: 4 },

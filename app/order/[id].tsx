@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../../src/lib/api';
 import { Order } from '../../src/types';
 import { SkeletonBox } from '../../src/components/Skeleton';
+import EmptyState from '../../src/components/EmptyState';
 
 const STATUS_STEPS = ['pending', 'confirmed', 'shipped', 'delivered'] as const;
 
@@ -46,11 +47,7 @@ export default function OrderDetailScreen() {
   }
 
   if (!order) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: '#9CA3AF' }}>Order not found</Text>
-      </View>
-    );
+    return <EmptyState icon="package" title="Order not found" subtitle="We couldn't load this order." />;
   }
 
   const currentStep = STATUS_STEPS.indexOf(order.status as any);
@@ -118,7 +115,7 @@ export default function OrderDetailScreen() {
 
         {/* Price summary */}
         <Text style={s.sectionTitle}>Price Summary</Text>
-        <View style={s.summaryBox}>
+          <View style={s.summaryBox}>
           {[
             { label: 'Items total', value: `₹${order.totalPrice.toFixed(2)}` },
             { label: 'Delivery', value: 'FREE' },
@@ -143,7 +140,7 @@ const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#fff' },
   header: { flexDirection: 'row', alignItems: 'center', padding: 12, borderBottomWidth: 1, borderColor: '#F3F4F6' },
   headerTitle: { flex: 1, textAlign: 'center', fontWeight: '700', fontSize: 16, color: '#111' },
-  metaBox: { backgroundColor: '#F9FAFB', borderRadius: 10, padding: 14, marginBottom: 16, gap: 2 },
+  metaBox: { backgroundColor: '#F9FAFB', borderRadius: 10, padding: 14, marginBottom: 16, gap: 2, borderWidth: 1, borderColor: '#E5E7EB' },
   metaLabel: { fontSize: 11, color: '#9CA3AF', marginTop: 6 },
   metaValue: { fontSize: 13, fontWeight: '600', color: '#111' },
   sectionTitle: { fontSize: 15, fontWeight: '700', color: '#111', marginBottom: 10, marginTop: 4 },
@@ -156,7 +153,7 @@ const s = StyleSheet.create({
   lineDone: { backgroundColor: '#16A34A' },
   stepLabel: { fontSize: 13, color: '#9CA3AF', paddingTop: 1 },
   stepLabelDone: { color: '#111', fontWeight: '600' },
-  productRow: { flexDirection: 'row', gap: 12, marginBottom: 12, padding: 10, borderWidth: 1, borderColor: '#F3F4F6', borderRadius: 10 },
+  productRow: { flexDirection: 'row', gap: 12, marginBottom: 12, padding: 10, borderWidth: 1, borderColor: '#F3F4F6', borderRadius: 10, backgroundColor: '#fff' },
   productImg: { width: 70, height: 70, borderRadius: 8, backgroundColor: '#F9FAFB' },
   productInfo: { flex: 1, gap: 3 },
   productName: { fontSize: 13, fontWeight: '600', color: '#111' },

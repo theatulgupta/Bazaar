@@ -40,6 +40,8 @@ export default function SearchScreen() {
       )
     : [];
 
+  const formatPrice = (price: number) => (price * 0.8).toFixed(2);
+
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
       {/* Search input */}
@@ -67,7 +69,10 @@ export default function SearchScreen() {
       </View>
 
       {isLoading && (
-        <ActivityIndicator color="#FF9900" style={{ marginTop: 40 }} />
+        <View style={s.loadingBox}>
+          <ActivityIndicator color="#FF9900" />
+          <Text style={s.loadingTxt}>Searching the catalog…</Text>
+        </View>
       )}
 
       {!isLoading && debouncedQuery.length > 1 && results.length === 0 && (
@@ -100,7 +105,7 @@ export default function SearchScreen() {
               <Text numberOfLines={2} style={s.resultTitle}>{item.title}</Text>
               <Text style={s.resultCat}>{item.category}</Text>
               <View style={s.resultPriceRow}>
-                <Text style={s.resultPrice}>₹{(Math.round(item.price * 80) / 100).toFixed(2)}</Text>
+                <Text style={s.resultPrice}>₹{formatPrice(item.price)}</Text>
                 <View style={s.ratingPill}>
                   <AntDesign name="star" size={10} color="#FF9900" />
                   <Text style={s.ratingTxt}>{item.rating.rate}</Text>
@@ -127,6 +132,8 @@ const s = StyleSheet.create({
   input: { flex: 1, fontSize: 14, color: '#111' },
   hint: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
   hintTxt: { fontSize: 14, color: '#9CA3AF' },
+  loadingBox: { alignItems: 'center', justifyContent: 'center', gap: 10, paddingTop: 32 },
+  loadingTxt: { fontSize: 13, color: '#6B7280' },
   separator: { height: 1, backgroundColor: '#F3F4F6' },
   resultRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, gap: 12 },
   thumb: { width: 64, height: 64, borderRadius: 8, backgroundColor: '#F9FAFB' },
