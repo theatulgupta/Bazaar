@@ -43,6 +43,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @bazaar/contracts build
       - run: pnpm --filter @bazaar/tokens build
+      - run: pnpm --filter @bazaar/api exec prisma generate
       - run: pnpm --filter @bazaar/api exec prisma migrate deploy
       - run: pnpm --filter @bazaar/api test
       - run: pnpm --filter @bazaar/api test:integration
