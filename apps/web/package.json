@@ -1,0 +1,35 @@
+{
+  "name": "@bazaar/web",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bazaar/contracts": "workspace:*",
+    "@bazaar/tokens": "workspace:*",
+    "@tanstack/react-form": "^1.33.5",
+    "@tanstack/react-pacer": "^0.23.0",
+    "@tanstack/react-query": "^5.103.2",
+    "@tanstack/react-query-devtools": "^5.103.2",
+    "@tanstack/react-store": "^0.11.1",
+    "@tanstack/react-table": "^9.2.4",
+    "lucide-react": "^1.47.0",
+    "next": "16.3.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.1",
+    "@types/react": "~19.2.2",
+    "@types/react-dom": "~19.2.2",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "3.4.17",
+    "typescript": "^5.9.2"
+  }
+}

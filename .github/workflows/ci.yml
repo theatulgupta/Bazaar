@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: bazaar
+          POSTGRES_PASSWORD: bazaar
+          POSTGRES_DB: bazaar
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U bazaar -d bazaar"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgresql://bazaar:bazaar@localhost:5432/bazaar
+      JWT_SECRET: ci-jwt-secret-that-is-at-least-32-characters
+      RAZORPAY_KEY_ID: rzp_test_ci
+      RAZORPAY_KEY_SECRET: ci-key-secret
+      RAZORPAY_WEBHOOK_SECRET: ci-webhook-secret
+      PAYMENTS_DRIVER: fake
+      CORS_ORIGINS: http://localhost:3000
+      ADMIN_EMAIL: admin@bazaar.local
+      ADMIN_PASSWORD: change-me-admin-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bazaar/contracts build
+      - run: pnpm --filter @bazaar/tokens build
+      - run: pnpm --filter @bazaar/api exec prisma migrate deploy
+      - run: pnpm --filter @bazaar/api test
+      - run: pnpm --filter @bazaar/api test:integration
+      - run: pnpm typecheck
+      - run: pnpm lint

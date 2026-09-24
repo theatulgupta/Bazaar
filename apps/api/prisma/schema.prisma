@@ -1,0 +1,265 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["identity", "catalog", "inventory", "cart", "ordering", "payments", "platform"]
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+
+  @@schema("identity")
+}
+
+model User {
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String
+  email            String    @unique
+  passwordHash     String    @map("password_hash")
+  role             Role      @default(CUSTOMER)
+  emailVerifiedAt  DateTime? @map("email_verified_at")
+  verificationHash String?   @map("verification_hash")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  addresses        Address[]
+  sessions         Session[]
+
+  @@map("users")
+  @@schema("identity")
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  familyId   String    @map("family_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash")
+  expiresAt  DateTime  @map("expires_at")
+  revokedAt  DateTime? @map("revoked_at")
+  replacedBy String?   @map("replaced_by") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at")
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([familyId])
+  @@index([userId])
+  @@map("sessions")
+  @@schema("identity")
+}
+
+model Address {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  mobile    String
+  houseNo   String   @map("house_no")
+  street    String
+  landmark  String
+  pincode   String
+  city      String
+  state     String
+  isDefault Boolean  @default(false) @map("is_default")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("addresses")
+  @@schema("identity")
+}
+
+model Category {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String
+  slug     String    @unique
+  products Product[]
+
+  @@map("categories")
+  @@schema("catalog")
+}
+
+model Product {
+  id          String   @id @default(uuid()) @db.Uuid
+  categoryId  String   @map("category_id") @db.Uuid
+  title       String
+  slug        String   @unique
+  description String
+  pricePaise  Int      @map("price_paise")
+  mrpPaise    Int      @map("mrp_paise")
+  imageUrl    String   @map("image_url")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@index([categoryId, active])
+  @@map("products")
+  @@schema("catalog")
+}
+
+model StockItem {
+  productId String @id @map("product_id") @db.Uuid
+  onHand    Int    @map("on_hand")
+  reserved  Int    @default(0)
+
+  @@map("stock_items")
+  @@schema("inventory")
+}
+
+model Reservation {
+  id        String   @id @default(uuid()) @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  orderId   String   @map("order_id") @db.Uuid
+  quantity  Int
+  status    String
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([status, expiresAt])
+  @@map("reservations")
+  @@schema("inventory")
+}
+
+model Cart {
+  id        String     @id @default(uuid()) @db.Uuid
+  userId    String     @unique @map("user_id") @db.Uuid
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  items     CartItem[]
+
+  @@map("carts")
+  @@schema("cart")
+}
+
+model CartItem {
+  id        String @id @default(uuid()) @db.Uuid
+  cartId    String @map("cart_id") @db.Uuid
+  productId String @map("product_id") @db.Uuid
+  quantity  Int
+  cart      Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+  @@schema("cart")
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  productId String   @map("product_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+  @@schema("cart")
+}
+
+model Order {
+  id              String      @id @default(uuid()) @db.Uuid
+  number          Int         @unique @default(autoincrement())
+  userId          String      @map("user_id") @db.Uuid
+  status          String
+  subtotalPaise   Int         @map("subtotal_paise")
+  shippingPaise   Int         @map("shipping_paise")
+  totalPaise      Int         @map("total_paise")
+  addressName     String      @map("address_name")
+  addressMobile   String      @map("address_mobile")
+  addressHouseNo  String      @map("address_house_no")
+  addressStreet   String      @map("address_street")
+  addressLandmark String      @map("address_landmark")
+  addressPincode  String      @map("address_pincode")
+  addressCity     String      @map("address_city")
+  addressState    String      @map("address_state")
+  contactEmail    String      @map("contact_email")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  items           OrderItem[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+  @@map("orders")
+  @@schema("ordering")
+}
+
+model OrderItem {
+  id             String @id @default(uuid()) @db.Uuid
+  orderId        String @map("order_id") @db.Uuid
+  productId      String @map("product_id") @db.Uuid
+  title          String
+  unitPricePaise Int    @map("unit_price_paise")
+  quantity       Int
+  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_items")
+  @@schema("ordering")
+}
+
+model Payment {
+  id                String   @id @default(uuid()) @db.Uuid
+  orderId           String   @unique @map("order_id") @db.Uuid
+  amountPaise       Int      @map("amount_paise")
+  currency          String   @default("INR")
+  status            String
+  razorpayOrderId   String?  @unique @map("razorpay_order_id")
+  razorpayPaymentId String?  @unique @map("razorpay_payment_id")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("payments")
+  @@schema("payments")
+}
+
+model WebhookEvent {
+  id         String   @id @default(uuid()) @db.Uuid
+  eventId    String   @unique @map("event_id")
+  eventType  String   @map("event_type")
+  payload    Json
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  @@map("webhook_events")
+  @@schema("payments")
+}
+
+model OutboxMessage {
+  id            String    @id @default(uuid()) @db.Uuid
+  type          String
+  payload       Json
+  correlationId String    @map("correlation_id")
+  attempts      Int       @default(0)
+  occurredAt    DateTime  @default(now()) @map("occurred_at")
+  publishedAt   DateTime? @map("published_at")
+
+  @@index([publishedAt, occurredAt])
+  @@map("outbox")
+  @@schema("platform")
+}
+
+model IdempotencyKey {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  key         String
+  requestHash String   @map("request_hash")
+  status      String
+  response    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@unique([userId, key])
+  @@map("idempotency_keys")
+  @@schema("platform")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  action     String
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  metadata   Json
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("audit_logs")
+  @@schema("platform")
+}

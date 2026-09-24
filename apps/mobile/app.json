@@ -1,0 +1,45 @@
+{
+  "expo": {
+    "name": "Bazaar",
+    "slug": "bazaar",
+    "scheme": "bazaar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.bazaar.app"
+    },
+    "android": {
+      "package": "com.bazaar.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#C8553D",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-dev-client",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#FAF6EF",
+          "image": "./assets/icon.png"
+        }
+      ],
+      "expo-font",
+      "expo-image"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

@@ -1,0 +1,17 @@
+process.env.NODE_ENV = 'test';
+process.env.PORT = '8000';
+process.env.WORKER_PORT = '8001';
+process.env.DATABASE_URL = process.env.DATABASE_URL ?? 'postgresql://theatulgupta@localhost:5432/bazaar_test';
+process.env.JWT_SECRET = 'test-jwt-secret-that-is-at-least-32-characters';
+process.env.JWT_ACCESS_TTL = '15m';
+process.env.JWT_REFRESH_TTL_DAYS = '30';
+process.env.CORS_ORIGINS = 'http://localhost:3000';
+process.env.RAZORPAY_KEY_ID = 'rzp_test_bazaar';
+process.env.RAZORPAY_KEY_SECRET = 'test-key-secret';
+process.env.RAZORPAY_WEBHOOK_SECRET = 'test-webhook-secret';
+process.env.PAYMENTS_DRIVER = 'fake';
+process.env.APP_PUBLIC_URL = 'http://localhost:3000';
+process.env.RESERVATION_TTL_MINUTES = '15';
+process.env.RATE_LIMIT_DISABLED = 'true';
+process.env.SMTP_HOST = '';
+process.env.OTEL_EXPORTER_OTLP_ENDPOINT = '';
